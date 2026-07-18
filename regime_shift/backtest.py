@@ -1,9 +1,9 @@
 """
 Walk-forward backtest
 
-Strict temporal train/test splits: on each rebalance date, the HMM is
-re-fit ONLY on data strictly before that date, and the CVXPY optimizer
-uses only the moments estimated from that same training window.
+Strict temporal test splits: on each rebalance date, the HMM is re-fit ONLY on data strictly before that date,
+and the CVXPY optimizer uses only the moments estimated from that same training window.
+
 Transaction friction is applied explicitly: every rebalance that changes
 weights pays a cost proportional to total turnover.
 """
@@ -25,12 +25,12 @@ def walk_forward_backtest(features: pd.DataFrame,
                            friction_bps: float = 7.5,
                            n_states: int = 3, #hmm states
                            return_col: str = "return") -> pd.DataFrame:
-"""
+    """
     Run the full detect -> allocate -> hold -> cost loop.
     Returns
     DataFrame indexed by date with columns: regime, gross_return, cost,
     net_return, turnover, plus one weight_<asset> column per asset.
-"""
+    """
 
     common_index = features.index.intersection(asset_returns.index)
     features = features.loc[common_index].sort_index() #HMM input features (return, vol, VIX)
@@ -117,3 +117,4 @@ def static_benchmark_returns(asset_returns: pd.DataFrame,
         periodic_returns.append((d, (period @ w).sum() if len(period) else 0.0))
 
     return pd.Series(dict(periodic_returns), name="benchmark_return")
+
